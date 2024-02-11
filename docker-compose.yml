@@ -42,9 +42,9 @@ services:
     networks:
       - monitoring
     volumes:
-      - ./config/dashboards:/var/lib/grafana/dashboards
-      - ./config/datasources:/etc/grafana/datasources
-      - ./config/plugins:/var/lib/grafana/plugins
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+      - ./grafana/datasources:/etc/grafana/datasources
+      - ./grafana/plugins:/var/lib/grafana/plugins
       - grafana_data:/var/lib/grafana
   spring-app:
     build: ./actuator
@@ -55,6 +55,18 @@ services:
       - monitoring
     volumes:
       - .m2:/root/.m2
+  alertmanager:
+    image: prom/alertmanager:latest
+    restart: unless-stopped
+    container_name: alert-manager
+    ports:
+      - "9093:9093"
+    volumes:
+      - "./alert-manager:/config"
+      - alertmanager_data:/data
+    command: --config.file=/config/alertmanager.yml --log.level=debug
+    networks:
+      - monitoring
 
 networks:
   monitoring:
@@ -63,3 +75,4 @@ networks:
 volumes:
   prometheus_data: {}
   grafana_data: {}
+  alertmanager_data: {}
