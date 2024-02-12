@@ -6,8 +6,7 @@ services:
     container_name: prometheus
     restart: unless-stopped
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      - ./prometheus/web.yml:/etc/prometheus/web.yml
+      - ./prometheus:/etc/prometheus
       - prometheus_data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
@@ -24,7 +23,7 @@ services:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
       - /:/rootfs:ro
-      - ./prometheus/web.yml:/etc/prometheus/web.yml
+      - ./prometheus:/etc/prometheus
     command:
       - '--path.procfs=/host/proc'
       - '--path.rootfs=/rootfs'
@@ -62,9 +61,11 @@ services:
     ports:
       - "9093:9093"
     volumes:
-      - "./alert-manager:/config"
+      - ./alert-manager:/config
       - alertmanager_data:/data
-    command: --config.file=/config/alertmanager.yml --log.level=debug
+    command: 
+      - '--config.file=/config/alertmanager.yml'
+      - '--log.level=debug'
     networks:
       - monitoring
 

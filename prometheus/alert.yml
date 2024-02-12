@@ -1,20 +1,11 @@
 groups:
-- name: Example
-  rules:
-    - alert: InstanceDown
-      expr: up == 0
+  - name: Spring-boot
+    rules:
+    - alert: 5xx-over-2%
+      expr: sum(rate(orders_5xx_total [1m])) / sum(rate({__name__=~"orders_*.xx_total"}[1m])) * 100 > 1
       for: 15s
       labels:
         severity: critical
+        techteam: rizkyj
       annotations:
-        summary: "Instance [{{ $labels.instance }}] down"
-        description: "[{{ $labels.instance }}] of job {{ $labels.job }} has been down for more than 15 seconds."
-
-    - alert: HostMemoryIsUnderutilized
-      expr: ({__name__="node_memory_MemAvailable_bytes", instance="node-exporter:9100", job="node"} > 80)
-      for: 15s
-      labels:
-        severity: critical
-      annotations:
-        summary: Host Memory is underutilized (instance {{ $labels.instance }})
-        description: "Node memory is < 20% for 1 week. Consider reducing memory space. (instance {{ $labels.instance }})\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+        summary: '{{ $labels }}  {{ $value }} % breach'

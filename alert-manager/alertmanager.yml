@@ -1,16 +1,24 @@
+global:
+  resolve_timeout: 5m
+
 route:
-  receiver: 'Mail Alert'
-  repeat_interval: 30s
-  group_wait: 15s
-  group_interval: 15s
+  group_by: ['alertname']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 1h
+  receiver: 'web.hook'
 
 receivers:
-  - name: 'Mail Alert'
-    email_configs:
-      - smarthost: 'sandbox.smtp.mailtrap.io:2525'
-        auth_username: 'ade***********'
-        auth_password: "cba***********"
-        from: 'alert@rizkyjdev.id'
-        to: 'receiver@rizkyjdev.id'
-        headers:
-          subject: 'Prometheus Mail Alerts'
+- name: 'web.hook'
+  webhook_configs:
+  - url: 'http://172.17.0.1:8080/alert-hook'
+    http_config:
+      basic_auth:
+        username: prometheus
+        password: prometheus
+inhibit_rules:
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname']
