@@ -24,12 +24,14 @@ scrape_configs:
     basic_auth:
       username: 'prometheus'
       password: 'prometheus'
+  - job_name: alertmanager
+    static_configs:
+      - targets: ['172.17.0.1:9093']
 
 rule_files:
   - alert.yml
 
 alerting:
   alertmanagers:
-    - scheme: http
-      static_configs:
-        - targets: [ '172.17.0.1:9093' ]
+  - static_configs:
+      - targets: [ '172.17.0.1:9093' ]

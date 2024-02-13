@@ -15,7 +15,8 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests((authz) -> authz
                         .anyRequest().authenticated()
                 )
-                .httpBasic(Customizer.withDefaults());
+                .httpBasic(Customizer.withDefaults())
+                .csrf().ignoringRequestMatchers("/alert-hook");
         return http.build();
     }
 
